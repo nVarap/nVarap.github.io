@@ -1,0 +1,175 @@
+<html>
+
+    <head>
+        <title> Dark Hallways </title>
+
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="center.scss">
+        <script type="text/javascript" src="data.json">
+        </script>
+    </head>
+
+    <script>
+        /*
+        Player Variables
+        */
+       let armor = 0;
+       let damage = 0;
+
+
+
+        var local = "0";
+
+
+        var all = {
+            "0": {
+                "script": "You approach a dark hallway. <br> There appears to be something on the ground. <br> Pick it up?",
+                "image": "hallway1.jpeg",
+                "choices": ["Yes", "No"],
+                "results" : {"Yes" : addToInv, "No":moveTo, "Yesfunc" : ["pistol", "1"], "Nofunc" : "1"}
+            },
+            "1": {
+                "script": "There appears to be something in the distance. <br> The hallway spans further. <br> Whatever is there appears to be approaching.",
+                "image": "hallway2.jpeg",
+                "choices": ["Approach", "Hide"],
+                "results" : {"Approach" : moveTo, "Hide":moveTo, "Approachfunc" : "3", "Hidefunc" : "2"}
+            },
+            "2": {
+                "script": "You sit behind a couch, waiting for whatever is there to disappear <br> It is possible to sneak <br> Do we sneak or stay?",
+                "image": "hallway2.jpeg",
+                "choices": ["Sneak", "Stay"],
+                "results" : {"Sneak" : moveTo, "Stay":moveTo, "Sneakfunk" : "0", "Stayfunc" : "0"}
+            },
+            "3": {
+                "script": "You approach the thing... <br> And it attacks! <br> Do we fight or run?",
+                "image": "hallway3.png",
+                "choices": ["Fight", "Run"],
+                "results" : {"Fight" : moveTo, "Run":addToInv, "Fightfunc" : "0", "Runfunc" : "0"}
+            }
+        };
+        
+
+        var inventory = {
+            
+        }
+
+        var assets = {
+            "pistol" : [damage, 1],
+            "vest" : [armor, 2]
+        }
+
+        function formatStuff(location) {
+            local = location;
+            console.log("Locality: " + local);
+            let point = all[location];
+            document.getElementById("hallwayIMG").src = "images/" + point["image"];
+            document.getElementById("C1").innerHTML = point["choices"][0];
+            document.getElementById("C2").innerHTML = point["choices"][1];
+            document.getElementById("script").innerHTML = point["script"];
+        }
+
+        function equip(item){
+            inventory[item] = !inventory[item];
+            if (inventory[item]){
+                document.getElementById("err").innerHTML = item + " equipped!"
+                setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+            }
+            else {
+                document.getElementById("err").innerHTML = item + " unequipped."
+                setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+            }
+        }
+
+        function addToInv(stuff) {
+            let name = stuff[0];
+            let location = stuff[1];
+            let elems = document.getElementsByName("slot");
+            let ocured = false;
+            for(let i = 0; i < elems.length; i++){
+                slot = elems[i];
+                if(slot.innerHTML === ""){
+                    var b = document.createElement("button");
+                    b.innerHTML = name
+                    b.id = name
+                    b.addEventListener("click", function(event){
+                        equip(name)
+                    })
+
+                    document.getElementById(slot.id).appendChild(b);
+                    ocured = true;
+                    document.getElementById("err").innerHTML = "You picked up a " + name
+                    setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+                    break
+                }
+            }
+            if (!ocured){
+                document.getElementById("err").innerHTML = "Inventory Full!"
+                setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+                
+            }
+           moveTo(location);
+        }
+
+        function moveTo(location){
+            formatStuff(location);
+        }
+
+        function manageFunctions(value){
+            console.log(local)
+            console.log("Stuff: " +  document.getElementById('C2').innerHTML);
+            let func = all[local]["results"];
+            console.log("value: " + value);
+            console.log(all[local]["results"])
+            func[value](func[value+"func"]);
+        }
+
+        window.onload = (event) => {
+            formatStuff(local);
+        };
+
+
+    </script>
+
+    <body style="position: relative; background-color: black;">
+        <div class="split left">
+            <div class="centered">
+                <img src="images/hallway1.jpeg" alt="Hallway1" id="hallwayIMG">
+                <div style="color: white;">
+                    <p id="script"> </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="split right">
+            <div class="centered">
+                <h1 style="position: fixed; bottom: 270px; right: -80px; color: white;"> Inventory </h1>
+                <div class="grid-container">
+                    <div id="slot1" name="slot" class="grid-item"></div>
+                    <div id="slot2" name="slot" class="grid-item"></div>
+                    <div id="slot3" name="slot" class="grid-item"></div>
+                    <div id="slot4" name="slot" class="grid-item"></div>
+                    <div id="slot5"name="slot" class="grid-item"></div>
+                    <div id="slot6" name="slot" class="grid-item"></div>
+                    <div id="slot7" name="slot" class="grid-item"></div>
+                    <div id="slot8" name="slot" class="grid-item"></div>
+                    <div id="slot9" name="slot" class="grid-item"></div>
+                    <div id="slot10" name="slot" class="grid-item"></div>
+                    <div id="slot11" name="slot" class="grid-item"></div>
+                    <div id="slot12" name="slot" class="grid-item"></div>
+                    <div id="slot13" name="slot" class="grid-item"></div>
+                    <div id="slot14" name="slot" class="grid-item"></div>
+                    <div id="slot15" name="slot" class="grid-item"></div>
+                    
+
+                </div>
+                <p id="err" style="position: fixed; top: 10px; right: -35px; color: white;"></p>
+                <div class="menu">
+                    <button onclick="manageFunctions(document.getElementById('C1').innerHTML)" id="C1" data-inline="true" class="button" style="margin: 0px"> </button>
+                    <button onclick="manageFunctions(document.getElementById('C2').innerHTML)" id="C2" data-inline="true" class="button" style="margin: 50px"> </button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </body>
+
+    </html>
