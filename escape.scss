@@ -9,7 +9,6 @@ $grid-template-rows: repeat(3, 1fr);
 
   /* fallback height */
   min-height:100vh;
-
   /* new small viewport height for modern browsers */
   min-height:100svh;
 }

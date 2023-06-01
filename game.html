@@ -44,18 +44,39 @@
                 "script": "You approach the thing... <br> And it attacks! <br> Do we fight or run?",
                 "image": "hallway3.png",
                 "choices": ["Fight", "Run"],
-                "results" : {"Fight" : moveTo, "Run":addToInv, "Fightfunc" : "0", "Runfunc" : "0"}
+                "results" : {"Fight" : specialMove, "Run":addToInv, "Fightfunc" : [4, 5, 'damage', 0], "Runfunc" : ["Tendril", 1]}
+            },
+            "4": {
+                "script": "You fight furiously... <br> But you are too weak <br> You fall to the maw of the monster",
+                "image": "hallway3.png",
+                "choices": ["End", "Game"],
+                "results" : {"End" : leave, "Game":leave, "Endfunc" : "monster", "Gamefunc" : "monster"}
+            },
+            "5": {
+                "script": "You fight furiously ... <br> and you destroy the monster! <br> You see a door beyond. Will you walk through?",
+                "image": "hallway3.png",
+                "choices": ["End", "Game"],
+                "results" : {"End" : moveTo, "Run":addToInv, "Endfunc" : "0", "Gamefunc" : ["Tendril", 1]}
             }
         };
         
-
+        var playerStats = {
+            "armor" : 0,
+            "damage" : 0,
+            "health" : 0,
+            "equipped" : {
+                "damage": "",
+                "armor" : ""
+            }
+        }
         var inventory = {
             
         }
 
         var assets = {
-            "pistol" : [damage, 1],
-            "vest" : [armor, 2]
+            "pistol" : ["damage", 1],
+            "vest" : ["armor", 2],
+            "tendril" : ["damage", 2]
         }
 
         function formatStuff(location) {
@@ -73,10 +94,13 @@
             if (inventory[item]){
                 document.getElementById("err").innerHTML = item + " equipped!"
                 setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+                playerStats[assets[item][0]] += assets[item][1];
+                playerStats["equipped"][assets[item][0]] = item;
             }
             else {
                 document.getElementById("err").innerHTML = item + " unequipped."
                 setTimeout(function(){document.getElementById("err").innerHTML = ""},1000);
+                playerStats[assets[item][0]] -= assets[item][1];
             }
         }
 
@@ -114,6 +138,17 @@
             formatStuff(location);
         }
 
+        function specialMove(information){//)loc1, loc2, condition, parameter){
+            console.log(information)
+            console.log(playerStats[information[2]] > information[3])
+            if(playerStats[information[2]] > information[3]){
+                moveTo(information[1])
+            }
+            else {
+                moveTo(information[0])
+            }
+        }
+
         function manageFunctions(value){
             console.log(local)
             console.log("Stuff: " +  document.getElementById('C2').innerHTML);
@@ -121,6 +156,14 @@
             console.log("value: " + value);
             console.log(all[local]["results"])
             func[value](func[value+"func"]);
+        }
+
+        function leave(cause){
+            localStorage.setItem("causeOfDeath", cause);
+            setTimeout(() => {
+                window.location = 'http://127.0.0.1:5500/gameover.html'
+            }, 500);
+           
         }
 
         window.onload = (event) => {
