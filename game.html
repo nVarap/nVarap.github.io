@@ -38,7 +38,7 @@
                 "script": "You sit behind a couch, waiting for whatever is there to disappear <br> It is possible to sneak <br> Do we sneak or stay?",
                 "image": "hallway2.jpeg",
                 "choices": ["Sneak", "Stay"],
-                "results" : {"Sneak" : moveTo, "Stay":moveTo, "Sneakfunk" : "0", "Stayfunc" : "0"}
+                "results" : {"Sneak" : moveTo, "Stay":moveTo, "Sneakfunc" : "6", "Stayfunc" : "2"}
             },
             "3": {
                 "script": "You approach the thing... <br> And it attacks! <br> Do we fight or run?",
@@ -55,10 +55,40 @@
             "5": {
                 "script": "You fight furiously ... <br> and you destroy the monster! <br> You see a door beyond. Will you walk through?",
                 "image": "hallway3.png",
+                "choices": ["Go Through", "Stay"],
+                "results" : {"Go Through" : moveTo, "Stay":moveTo, "Go Throughfunc" : "9", "Stayfunc" : "8"}
+            },
+            "6": {
+                "script": "You sneak by the monster <br> and behind it you see a door. Do we stay or do we go approach the door?",
+                "image": "hallway3.png",
+                "choices": ["Go!", "Stay"],
+                "results" : {"Go!" : moveTo, "Stay":moveTo, "Go!func" : "3", "Stayfunc" : "7"}
+            },
+            "7": {
+                "script": "You stay inside <br> but you are lost within the chaos of the labyrinth <br> You fall in the winding labyrinth",
+                "image": "hallway4.jpeg",
                 "choices": ["End", "Game"],
-                "results" : {"End" : moveTo, "Run":addToInv, "Endfunc" : "0", "Gamefunc" : ["Tendril", 1]}
+                "results" : {"End" : leave, "Game":leave, "Endfunc" : "stay", "Gamefunc" : "stay"}
+            },
+            "8": {
+                "script": "Your raucous fight opens a door in the damp floor <br> unable to keep up your balance, you fall into the ground <br> and fall into the infinite chasm",
+                "image": "hallway5.jpg",
+                "choices": ["End", "Game"],
+                "results" : {"End" : leave, "Game":leave, "Endfunc" : "hole", "Gamefunc" : "hole"}
+            },
+            "9": {
+                "script": "You escape through the door into the light. <br> The air feels good, and the darkness fades <br> You escape!",
+                "image": "hallway6.jpg",
+                "choices": ["End", "Game"],
+                "results" : {"End" : victory, "Game":victory, "Endfunc" : "fighting", "Gamefunc" : "fighting"}
             }
+            
+
         };
+
+        //TODO: Finish the sneak and the stay/go through (completion page)
+        // Then finish up backend and leaderboard
+        // Completed: sneak, ending of staying
         
         var playerStats = {
             "armor" : 0,
@@ -135,6 +165,7 @@
         }
 
         function moveTo(location){
+            console.log("Location Passed in " + location)
             formatStuff(location);
         }
 
@@ -161,9 +192,16 @@
         function leave(cause){
             localStorage.setItem("causeOfDeath", cause);
             setTimeout(() => {
-                window.location = 'http://127.0.0.1:5500/gameover.html'
+                window.location = 'http://127.0.0.1:5501/gameover.html'
             }, 500);
            
+        }
+
+        function victory(win){
+            localStorage.setItem("causeOfVictory", win);
+            setTimeout(() => {
+                window.location = 'http://127.0.0.1:5501/victory.html'
+            }, 500);
         }
 
         window.onload = (event) => {
